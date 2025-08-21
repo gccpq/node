@@ -18,21 +18,23 @@ node index.js
 
 ## API
 
-### `POST /encrypt?app=<算法>`
+### `POST /encrypt?app=<算法或中文名称>`
 
-请求体必须是 `JSON`，包含字段 `text`。`app` 参数决定加密算法：
+请求体为需要加密的数据，可以是任意 JSON。`app` 参数决定加密算法：
 
-- `sha256`：返回 SHA-256 哈希。
-- `aes`：使用 AES-256-CBC 加密。
-- 其他值：返回 Base64 编码。
+- `sha256` 或 `哈希`：返回 SHA-256 哈希。
+ - `aes` 或 `对称`：使用 AES-256-CBC 加密。
+ - 其他值：返回 Base64 编码。
 
 示例：
 
 ```bash
-curl -X POST "http://localhost:3000/encrypt?app=sha256" \
+curl -X POST "http://localhost:3000/encrypt?app=哈希" \
   -H "Content-Type: application/json" \
   -d '{"text":"hello"}'
 ```
+
+加密实现位于 `encryption.js`，可用于对接或自定义扩展。
 
 ### `GET /info`
 

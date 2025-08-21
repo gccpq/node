@@ -1,5 +1,5 @@
 const express = require('express');
-const crypto = require('crypto');
+const { encrypt } = require('./encryption');
 
 const app = express();
 app.use(express.json());
@@ -7,27 +7,19 @@ app.use(express.static('public'));
 
 const visits = {};
 
-function encrypt(text, appName) {
-  switch (appName) {
-    case 'sha256':
-      return crypto.createHash('sha256').update(text).digest('hex');
-    case 'aes':
-      const key = crypto.createHash('sha256').update('secret').digest();
-      const iv = crypto.randomBytes(16);
-      const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
-      let encrypted = cipher.update(text, 'utf8', 'base64');
-      encrypted += cipher.final('base64');
-      return iv.toString('base64') + ':' + encrypted;
-    default:
-      return Buffer.from(text).toString('base64');
-  }
-}
-
 app.post('/encrypt', (req, res) => {
-  const { text } = req.body;
   const appName = req.query.app;
-  if (!text || !appName) {
-    return res.status(400).json({ error: 'missing text or app' });
+  const data = req.body;
+  if (!data || !appName) {
+    return res.status(400).json({ error: 'missing body or app' });
+  }
+  let text;
+  if (typeof data === 'string') {
+    text = data;
+  } else if (data.text !== undefined) {
+    text = data.text;
+  } else {
+    text = JSON.stringify(data);
   }
   const result = encrypt(text, appName);
   res.json({ encrypted: result });
