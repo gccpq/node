@@ -7,11 +7,22 @@ app.use(express.static('public'));
 
 const visits = {};
 
+// Each app name maps to its dedicated algorithm
+const appAlgorithms = {
+  hashApp: 'sha256',
+  aesApp: 'aes'
+};
+
 app.post('/encrypt', (req, res) => {
   const appName = req.query.app;
   const data = req.body;
   if (!data || !appName) {
     return res.status(400).json({ error: 'missing body or app' });
+  }
+
+  const algorithm = appAlgorithms[appName];
+  if (!algorithm) {
+    return res.status(400).json({ error: 'unknown app' });
   }
   let text;
   if (typeof data === 'string') {
@@ -21,7 +32,7 @@ app.post('/encrypt', (req, res) => {
   } else {
     text = JSON.stringify(data);
   }
-  const result = encrypt(text, appName);
+  const result = encrypt(text, algorithm);
   res.json({ encrypted: result });
 });
 
