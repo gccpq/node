@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 
-function encrypt(text, appName) {
-  switch (appName) {
+function encrypt(text, algorithm) {
+  switch (algorithm) {
     case 'sha256':
     case 'SHA256':
     case '哈希':
