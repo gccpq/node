@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Visitor Info</title>
+</head>
+<body>
+  <h1>Visitor Info</h1>
+  <p>IP: <span id="ip"></span></p>
+  <p>Location: <span id="location"></span></p>
+  <p>Visit count: <span id="count"></span></p>
+  <p>Time: <span id="time"></span></p>
+  <script>
+    async function loadInfo() {
+      const res = await fetch('/info');
+      const data = await res.json();
+      document.getElementById('ip').textContent = data.ip;
+      if (data.location && !data.location.error) {
+        document.getElementById('location').textContent = `${data.location.country} ${data.location.regionName} ${data.location.city}`;
+      } else {
+        document.getElementById('location').textContent = 'Unknown';
+      }
+      document.getElementById('count').textContent = data.count;
+      document.getElementById('time').textContent = new Date(data.time).toLocaleString();
+    }
+    loadInfo();
+  </script>
+</body>
+</html>
