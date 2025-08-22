@@ -39,7 +39,13 @@ app.post('/encrypt', (req, res) => {
 app.get('/info', async (req, res) => {
   const ip = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.ip || '').replace('::ffff:', '');
   const now = new Date();
-  visits[ip] = (visits[ip] || 0) + 1;
+
+  if (!visits[ip]) {
+    visits[ip] = { count: 0, times: [] };
+  }
+  visits[ip].count += 1;
+  visits[ip].times.push(now.toISOString());
+
   let location = {};
   try {
     const response = await fetch(`http://ip-api.com/json/${ip}`);
@@ -47,7 +53,7 @@ app.get('/info', async (req, res) => {
   } catch (e) {
     location = { error: 'lookup failed' };
   }
-  res.json({ ip, location, count: visits[ip], time: now.toISOString() });
+  res.json({ ip, location, count: visits[ip].count, times: visits[ip].times });
 });
 
 const port = process.env.PORT || 3000;
