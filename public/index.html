@@ -3,13 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <title>Visitor Info</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Visitor Info</h1>
-  <p>IP: <span id="ip"></span></p>
-  <p>Location: <span id="location"></span></p>
-  <p>Visit count: <span id="count"></span></p>
-  <p>Time: <span id="time"></span></p>
+  <div class="container">
+    <h1>Visitor Info</h1>
+    <div class="info-item">IP: <span id="ip"></span></div>
+    <div class="info-item">Location: <span id="location"></span></div>
+    <div class="info-item">Visit count: <span id="count"></span></div>
+    <div class="info-item">Visit times:</div>
+    <ul id="times"></ul>
+  </div>
   <script>
     async function loadInfo() {
       const res = await fetch('/info');
@@ -21,7 +25,14 @@
         document.getElementById('location').textContent = 'Unknown';
       }
       document.getElementById('count').textContent = data.count;
-      document.getElementById('time').textContent = new Date(data.time).toLocaleString();
+
+      const timesList = document.getElementById('times');
+      timesList.innerHTML = '';
+      data.times.forEach(t => {
+        const li = document.createElement('li');
+        li.textContent = new Date(t).toLocaleString();
+        timesList.appendChild(li);
+      });
     }
     loadInfo();
   </script>
